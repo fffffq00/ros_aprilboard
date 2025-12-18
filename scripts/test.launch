@@ -1,0 +1,4 @@
+<?xml version="1.0" ?>
+<launch>
+	<include file="$(find ros_aprilboard)/launch/ros_detector.launch"/>
+</launch>

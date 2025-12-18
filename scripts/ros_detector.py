@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import sys
 from pathlib import Path
 __package__ = Path(__file__).parent.name
@@ -154,12 +155,17 @@ class RosAprilboardDetectorNode:
         objpts = objpts.reshape(-1, 3).astype(np.float64)
         imgpts = imgpts.reshape(-1, 2).astype(np.float64)
         retval, rvec, tvec, reperror = solve_pnp_ippe_select(objpts, imgpts, self.cam_K, self.cam_D)
+        
 
         if not retval:
             rospy.logdebug("solvePnP returned false")
             return
         
         rospy.loginfo(f"IPPE ReProjectError {reperror}")
+
+        cv2.drawFrameAxes(
+            cv_image, self.cam_K, self.cam_D, rvec, tvec, self.board.markerLength * 0.5
+        )
 
         # convert to quaternion
         R, _ = cv2.Rodrigues(rvec)
