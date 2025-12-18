@@ -21,6 +21,22 @@ import tf
 from aprilboard import AprilDetector, AprilBoard
 
 
+def solve_pnp_ippe_select(objpts, imgpts, K, D):
+    retvals, rvecs, tvecs, reproj_errs = cv2.solvePnPGeneric(
+        objpts, imgpts, K, D, flags=cv2.SOLVEPNP_IPPE
+    )
+    if not retvals or len(rvecs) == 0:
+        return False, None, None, None
+    # solvePnPGeneric 返回的是 list
+    reproj_errs = np.array(reproj_errs).reshape(-1)
+    best_idx = int(np.argmin(reproj_errs))
+    best_rvec = rvecs[best_idx]
+    best_tvec = tvecs[best_idx]
+    best_error = float(reproj_errs[best_idx])
+
+    return True, best_rvec, best_tvec, best_error
+
+
 class RosAprilboardDetectorNode:
     def __init__(self):
         # params for board
@@ -137,11 +153,13 @@ class RosAprilboardDetectorNode:
         # ensure shapes
         objpts = objpts.reshape(-1, 3).astype(np.float64)
         imgpts = imgpts.reshape(-1, 2).astype(np.float64)
-        retval, rvec, tvec = cv2.solvePnP(objpts, imgpts, self.cam_K, self.cam_D)
+        retval, rvec, tvec, reperror = solve_pnp_ippe_select(objpts, imgpts, self.cam_K, self.cam_D)
 
         if not retval:
             rospy.logdebug("solvePnP returned false")
             return
+        
+        rospy.loginfo(f"IPPE ReProjectError {reperror}")
 
         # convert to quaternion
         R, _ = cv2.Rodrigues(rvec)
