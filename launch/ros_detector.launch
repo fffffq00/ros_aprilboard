@@ -3,6 +3,7 @@
 
     <arg name="camera_frame" default="camera_color_optical_frame" doc="The tf frame corresponding to the optical frame of the RGB camera" />
     <arg name="reference_frame" default="camera_color_optical_frame" doc="The tf frame with respect to which the pose will be published" />
+    <arg name="board_frame" default="board" doc="The tf frame of the Aprilboard" />
     <arg name="camera_info_topic" default="/camera/color/camera_info" doc="The topic on which the camera info is published" />
     <arg name="camera_image_topic" default="/camera/color/image_raw" doc="The topic on which the camera image is published" />
     <arg name="rows" default="8" doc="Number of marker rows on the Aprilboard" />
@@ -18,6 +19,7 @@
   <node pkg="ros_aprilboard" type="ros_detector.py" name="ros_aprilboard_detector" output="screen">
     <param name="camera_frame" value="$(arg camera_frame)"/>
     <param name="reference_frame" value="$(arg reference_frame)"/>
+    <param name="board_frame" value="$(arg board_frame)"/>
     <param name="camera_info_topic" value="$(arg camera_info_topic)"/>
     <param name="camera_image_topic" value="$(arg camera_image_topic)"/>
 

@@ -50,10 +50,11 @@ class RosAprilboardDetectorNode:
         # frames
         self.camera_frame = rospy.get_param("~camera_frame", "camera_rgb_optical_frame")
         self.reference_frame = rospy.get_param("~reference_frame", self.camera_frame)
-        self.marker_frame = rospy.get_param("~marker_frame", "board")
+        self.board_frame = rospy.get_param("~board_frame", "board")
         self.tag_family_name = rospy.get_param("~tag_family", "t36h11")
         self.camera_info_topic = rospy.get_param("~camera_info_topic", "/camera_info")
         self.camera_image_topic = rospy.get_param("~camera_image_topic", "/image_rect_color")
+        
 
         self.draw_markers = rospy.get_param("~draw_markers", True)
         self.draw_corners = rospy.get_param("~draw_corners", False)
@@ -174,9 +175,9 @@ class RosAprilboardDetectorNode:
         quat = tf.transformations.quaternion_from_matrix(T)
         t = (float(tvec[0]), float(tvec[1]), float(tvec[2]))
 
-        # publish TF (child = marker_frame, parent = reference_frame)
+        # publish TF (child = board_frame, parent = reference_frame)
         now = rospy.Time.now()
-        self.tf_broadcaster.sendTransform(t, quat, now, self.marker_frame, self.reference_frame)
+        self.tf_broadcaster.sendTransform(t, quat, now, self.board_frame, self.reference_frame)
 
         # publish PoseStamped
         pose = PoseStamped()
